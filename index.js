@@ -4,12 +4,12 @@ const {
   HttpError,
   Keyboard,
   InlineKeyboard,
-  InputFile,
 } = require("grammy");
 require("dotenv").config();
 const { getRandomQuestion, getCorrectAnswer, getImage } = require("./utils");
 
 const bot = new Bot(process.env.BOT_API_KEY);
+
 bot.command("start", async (ctx) => {
   const startKeyboard = new Keyboard()
     .text("HTML")
@@ -49,6 +49,11 @@ bot.hears(
       ]);
 
       inlineKeyboard = InlineKeyboard.from(buttonRows);
+    } else {
+      inlineKeyboard = new InlineKeyboard().text(
+        "To know the answer",
+        JSON.stringify({ questionId: question.id, type: questionTopic })
+      );
     }
 
     if (question.img) {
@@ -56,7 +61,11 @@ bot.hears(
         [
           InlineKeyboard.text(
             "Image hint",
-            JSON.stringify({ questionId: question.id, type: questionTopic })
+            JSON.stringify({
+              questionId: question.id,
+              type: questionTopic,
+              btnName: "hint",
+            })
           ),
         ],
         [
@@ -68,15 +77,6 @@ bot.hears(
       ];
 
       inlineKeyboard = InlineKeyboard.from(buttonRows);
-      // inlineKeyboard = new InlineKeyboard().text(
-      //   "Image hint",
-      //   JSON.stringify({ questionId: question.id, type: questionTopic })
-      // );
-    } else {
-      inlineKeyboard = new InlineKeyboard().text(
-        "To know the answer",
-        JSON.stringify({ questionId: question.id, type: questionTopic })
-      );
     }
 
     await ctx.reply(question.text, {
@@ -87,13 +87,12 @@ bot.hears(
 
 bot.on("callback_query:data", async (ctx) => {
   const callbackData = JSON.parse(ctx.callbackQuery.data);
-  const { questionId, type } = callbackData;
+  const { questionId, type, btnName } = callbackData;
   if (!callbackData.type.includes("option")) {
     const answer = getCorrectAnswer(questionId, type);
-    const image = getImage(questionId, type);
 
-    console.log("*** index.js ***", image);
-    if (image) {
+    if (btnName === "hint") {
+      const image = getImage(questionId, type);
       await ctx.replyWithPhoto(image);
       await ctx.answerCallbackQuery();
       return;
@@ -110,8 +109,6 @@ bot.on("callback_query:data", async (ctx) => {
 
   if (callbackData.isCorrect) {
     // await ctx.replyWithPhoto({ source: "./assets/test.png" });
-
-    // await ctx.replyWithPhoto(new InputFile("./assets/test.png"));
     await ctx.reply("✅ Correct");
     await ctx.answerCallbackQuery();
 

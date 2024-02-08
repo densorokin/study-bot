@@ -32,8 +32,6 @@ const getCorrectAnswer = (id, topic) => {
 };
 
 const getImage = (id, topic) => {
-  console.log("*** utils.js ***", questions[topic][id].img);
-  console.log("*** utils.js ***", questions[topic][id]);
   const el = questions[topic].find((el) => el.id === id);
   if (el) {
     return el.img;
