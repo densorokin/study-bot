@@ -75,7 +75,7 @@ bot.on("callback_query:data", async (ctx) => {
   }
 
   if (callbackData.isCorrect) {
-    await ctx.reply("Correct :white_check_mark:");
+    await ctx.reply("✅ Correct");
     await ctx.answerCallbackQuery();
 
     return;
@@ -85,7 +85,7 @@ bot.on("callback_query:data", async (ctx) => {
     callbackData.questionId,
     callbackData.type.split("-")[0]
   );
-  await ctx.reply(`Not correct :❌:. The answer is: ${answer}`);
+  await ctx.reply(`❌ Not correct. The answer is: ${answer}`);
 });
 
 bot.catch((err) => {
