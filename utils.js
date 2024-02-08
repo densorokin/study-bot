@@ -14,7 +14,7 @@ const getRandomQuestion = (topic) => {
   const randomQuestionIndex = Math.floor(
     Math.random() * questions[questionTopic].length
   );
-  debugger;
+
   return {
     question: questions[questionTopic][randomQuestionIndex],
     questionTopic,
@@ -31,7 +31,19 @@ const getCorrectAnswer = (id, topic) => {
   return question.options.find((option) => option.isCorrect).text;
 };
 
+const getImage = (id, topic) => {
+  console.log("*** utils.js ***", questions[topic][id].img);
+  console.log("*** utils.js ***", questions[topic][id]);
+  const el = questions[topic].find((el) => el.id === id);
+  if (el) {
+    return el.img;
+  }
+
+  return false;
+};
+
 module.exports = {
   getRandomQuestion,
   getCorrectAnswer,
+  getImage,
 };
